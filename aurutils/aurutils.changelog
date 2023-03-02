@@ -1,3 +1,206 @@
+## 10
+
+* `aur`
+  + support environment files (`$AUR_ENV`, defaults to `$XDG_CONFIG_HOME/aurutils/env`)
+  + add `--env`
+
+* `aur-build`
+  + use `AUR_PACMAN_AUTH` as elevation command (prior: `PACMAN_AUTH`)
+  + use `$PWD` as default value for `$LOGDEST`
+  + bug fixes for gpg signing (`--sign`)
+
+* `aur-chroot`
+  + use `AUR_PACMAN_AUTH` as elevation command (prior: `PACMAN_AUTH`)
+
+* `aur-fetch`
+  + `--sync=auto`: run `git-merge` instead of `git-reset`
+    - add `--ff`, `--ff-only`, `--no-ff`, `--no-commit` options
+    - fix a bug where setting `aurutils.rebase` affected unrelated targets
+    - set default author for merge commits to `aurutils@localhost`
+  + `--sync=auto` now preserves local changes by default
+    - `--discard` (`-f`) resets the branch on new upstream commits
+  + add `--reset`, `--rebase`, `--auto` (`--sync=reset`, `--sync=rebase`, `--sync=auto`)
+  + support multiple branches, with commits merged from `origin/master`
+
+* `aur-pkglist`
+  + output is now independent of command-line argument order
+  + deprecate `-I`, `-S`, `-u`
+    - renamed to: `-i` (`--info`), `-s` (`--search`) `-q` (`--quiet`)
+  + deprecate `-J` (`--json`)
+    - behaves like `--plain`, remove pretty-printing with `jq`
+  + add `--systime`
+
+* `aur-repo`
+  + `-q` now applies to `--list` and `--upgrades`
+  + add `--list-attr`
+  + deprecate `--status-file`
+
+* `aur-search`
+  + add `--color` (`auto`, `always`, `none`)
+
+* `aur-srcver`
+  + remove `-E`, `--env` (deprecated in v8)
+
+* `aur-sync`
+  + use pkgspec `<REPOSITORY>/<PACKAGE>` format for `--ignore-file`
+    - support for sections (introduced with v6.3) is removed (#880)
+    - <PACKAGE> ignores apply to all local repositories
+  + add `--rebase`, `--reset` options for `aur-fetch`
+  + exit 22 on dependency cycles (v7 regression)
+  + filter dependency graph by pkgname, not depends (v7 regression)
+  + store `build.ninja` files in `$XDG_RUNTIME_DIR/aurutils`
+
+* `completions`
+  + major overhaul of zsh completions (#990)
+
+## 9.6
+
+* `aur-pkglist`
+  + add `AUR_METADEST` (directory where metadata archives are stored)
+  + add `--quiet`
+
+* `aur-fetch`
+  + write `git-merge` to `results_file` if the command is run
+
+## 9.5
+
+* `aur-build`
+  + add `--results-append`
+  + write results file as build user
+
+* `aur-query`
+  + support `--type=suggest`
+
+## 9.4
+
+* `aur-build`
+  + revert "retrieve local repository before setting --chroot paths"
+
+## 9.3
+
+* `examples`
+  + rework `sync-list`
+
+## 9.2
+
+* `aur-build`
+  + deprecate `--results`
+  + retrieve local repository before setting `--chroot` paths
+  + unset `PKGEXT` when using `--chroot`
+
+* `aur-search`
+  + use OSC8 terminal hyperlinks (#849)
+
+## 9.1
+
+`aur-build` now uses `setpriv(1)` to run unprivileged commands (`makepkg`, `gpg`,
+`repo-add`) when `AUR_ASROOT` is combined with `--user`. This change has no
+effect when running `aur-build` as a regular user.
+
+Usage:
+
+  $ sudo env AUR_ASROOT=1 aur build --chroot --user <build_user> ...
+
+The above works with `--chroot` (`makechrootpkg -U`). Environment variables in
+the root environment are preserved for user commands, similar to `runuser -c`.
+Host builds using `makepkg --syncdeps` to install dependencies require further
+configuration.
+
+┌──────────────────────────────────────────────────────────────────────────────┐
+│ WARNING!                                                                     │
+│                                                                              │
+│ Running `aur-build` as root is experimental and disabled by default. If your │
+│ install breaks, you get to keep both pieces.                                 │
+└──────────────────────────────────────────────────────────────────────────────┘
+
+## 9
+
+* `examples`
+  + add `chroot-batch`
+
+* `lib`
+  + add `aur-build--pkglist`
+
+* `aur-build`
+  + add `--dry-run`
+  + redirect `makepkg -od` output (`--pkgver`) to stderr
+  + sign existing packages (#967)
+
+* `aur-fetch`
+  + add `--no-pager` to the `git log` command (#969)
+  + `--existing`: clone instead of skip targets if they exist
+
+* `aur-sync`
+  + redirect `aur-fetch` output to stderr (#974)
+
+## 8.3
+
+* `aur-fetch`
+  + add `--revision`
+  + add `--no-patch`
+
+* `aur-repo`
+  + add `--field`
+
+* `examples`
+  + add `vercmp-devel`, `sync-list`
+  + rename `aur-sync-devel` to `sync-devel`
+
+## 8.2
+
+* `aur-srcver`
+  + add separator before first failed package
+
+* `aur-fetch`
+  + handle empty `git` repositories (#959)
+
+* `man7`
+  + remove `aurvcs.7`, move `aur-sync-devel` to `examples`
+
+## 8.1
+
+* `aur-srcver`
+  + fix directory to source the build script from (#958)
+
+## 8
+
+* `aur-chroot`
+
+The `aur-chroot` command-line was changed so that `--create`, `--build` and
+`--update` can be used in a single command. Command-line arguments are now
+exclusively used for packages passed to `mkarchroot` and `arch-nspawn`.
+To set `makechrootpkg` options, the new `--margs` and `--cargs` options are
+available. As `aur-build --margs`, these take a comma-delimited string and
+can be specified multiple times. (Issues: #950, #807)
+
+The `--packagelist` command is now deprecated. The container path can be
+retrieved with the `--path` option, e.g for use with `makepkg --config`.
+
+* `aur-build`
+  + Consider all repositories (`Usage = Install`) for local repository upgrade (#956)
+
+* `aur-srcver`
+  + add `--buildscript`
+  + deprecate `-E` / `--env`
+    - `get_full_version` from `libmakepkg` is now used after running `makepkg`
+  + take arguments from `stdin` if `-` is specified
+
+* `aurvcs.7`
+  + run `aur-fetch` and `aur-view` before `aur-srcver`
+  + sample code remaned to `aur-sync-devel`
+
+## 7.2
+
+* `aur-search`
+  + add `OptDepends` to `--info` output (#945)
+  + handle empty keywords in `--info` output (#946)
+
+* `aur-depends`
+  + add `--optdepends` (#945)
+
+* `aur-sync`
+  + add `--optdepends` (#945)
+
 ## 7.1
 
 * `aur-build`
