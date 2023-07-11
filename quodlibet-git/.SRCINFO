@@ -1,0 +1,33 @@
+pkgbase = quodlibet-git
+	pkgdesc = An audio library tagger, manager and player
+	pkgver = r10393.ed4d84575
+	pkgrel = 1
+	url = https://quodlibet.readthedocs.io
+	arch = any
+	license = GPL2
+	makedepends = gettext
+	depends = gtk3
+	depends = python-gobject
+	depends = python-dbus
+	depends = python-cairo
+	depends = python-mutagen
+	depends = gst-plugins-base
+	depends = gst-plugins-good
+	depends = gst-plugins-ugly
+	depends = desktop-file-utils
+	depends = python-feedparser
+	optdepends = gst-libav: for ffmpeg (ASF/WMA) support
+	optdepends = gst-plugins-bad: for Musepack support
+	optdepends = libkeybinder3: for the multimedia keys support
+	optdepends = python-musicbrainzngs: for "MusicBrainz Lookup" plugin
+	optdepends = python-pyinotify: for "Automatic library update" plugin
+	optdepends = kakasi: for "Kana/Kanji Simple Inverter" plugin
+	optdepends = gst-plugins-bad: for "Audio Pitch/Speed" plugin
+	provides = quodlibet
+	conflicts = quodlibet
+	options = !makeflags
+	source = quodlibet-git::git+https://github.com/quodlibet/quodlibet.git
+	sha1sums = SKIP
+
+pkgname = quodlibet-git
+
